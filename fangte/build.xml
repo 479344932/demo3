@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project name="Flash2createjs compress project" basedir="." default="createjsCompile">
+    <taskdef name="CompressionPNG" classname="org.flash2x.CompressionPNG" classpath="${basedir}/tools/flash2x.jar"/>
+    <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
+             classpath="${basedir}/tools/compiler.jar"/>
+    <target name="createjsCompile">
+        <delete dir="${basedir}/released"/>
+        <copy toDir="${basedir}/released/">
+            <fileset dir="${basedir}">
+                <include name="libs/**/*.js" />
+                <include name="index.html" />
+                <include name="resource/**/*" />
+            </fileset>
+        </copy>
+        <!-- 先替换掉空拍及换行-->
+        <replaceregexp encoding="utf-8" flags="g"  byline="false">
+            <regexp pattern='[\s\r\n\t]+'/>
+            <substitution expression="" />
+            <fileSet dir="${basedir}/released">
+                <include name="resource/*/*.res.json"/>
+            </fileSet>
+        </replaceregexp>
+        <!-- 再来将合并后多于的js文件引用去掉-->
+        <replaceregexp encoding="utf-8" flags="g"  byline="true">
+            <regexp pattern=',?\{"src":"src\/.*?","type":"javascript"\}'/>
+            <substitution expression="" />
+            <fileSet dir="${basedir}/released">
+                <include name="resource/*/*.res.json"/>
+            </fileSet>
+        </replaceregexp>
+        <replaceregexp encoding="utf-8" flags="g"  byline="true">
+            <regexp pattern='\[,'/>
+            <substitution expression="[" />
+            <fileSet dir="${basedir}/released">
+                <include name="resource/*/*.res.json"/>
+            </fileSet>
+        </replaceregexp>
+        <replaceregexp encoding="utf-8" flags="g"  byline="true">
+            <regexp pattern=',\]'/>
+            <substitution expression="]" />
+            <fileSet dir="${basedir}/released">
+                <include name="resource/*/*.res.json"/>
+            </fileSet>
+        </replaceregexp>
+        <CompressionPNG binPath="${basedir}/tools/pngquant" params="--ext=.png --force">
+            <fileSet dir="${basedir}/released">
+                <include name="resource/**/*.png"/>
+            </fileSet>
+        </CompressionPNG>
+        <jscomp compilationLevel="simple" warning="quiet"
+                debug="false" output="${basedir}/released/src/Main.js">
+            <sources dir="${basedir}/src">
+                <file name="Main.js"/>
+            </sources>
+        </jscomp>
+    	<jscomp compilationLevel="simple" warning="quiet" debug="false" output="${basedir}/released/src/home/Home.js">
+			<sources dir="${basedir}">
+				<!--need_package_home-->
+				<file name="src/home/homeAuto.js"/>
+				<file name="src/home/Home.js"/>
+				<file name="src/home/Arrow.js"/>
+				<file name="src/home/Content.js"/>
+				<file name="src/home/Person6.js"/>
+				<file name="src/home/Person5.js"/>
+				<file name="src/home/Person4.js"/>
+				<file name="src/home/Person3.js"/>
+				<file name="src/home/Person2.js"/>
+				<file name="src/home/Person1.js"/>
+			</sources>
+		</jscomp>
+		<jscomp compilationLevel="simple" warning="quiet" debug="false" output="${basedir}/released/src/tip/Tip.js">
+			<sources dir="${basedir}">
+				<!--need_package_tip-->
+				<file name="src/tip/tipAuto.js"/>
+				<file name="src/tip/Tip.js"/>
+			</sources>
+		</jscomp>
+		<jscomp compilationLevel="simple" warning="quiet" debug="false" output="${basedir}/released/src/loading/Loading.js">
+			<sources dir="${basedir}">
+				<!--need_package_loading-->
+				<file name="src/loading/loadingAuto.js"/>
+				<file name="src/loading/Loading.js"/>
+			</sources>
+		</jscomp>
+		<jscomp compilationLevel="simple" warning="quiet" debug="false" output="${basedir}/released/src/end/End.js">
+			<sources dir="${basedir}">
+				<!--need_package_end-->
+				<file name="src/end/endAuto.js"/>
+				<file name="src/end/End.js"/>
+				<file name="src/end/Content.js"/>
+				<file name="src/end/StartTip.js"/>
+				<file name="src/end/MoreInfo.js"/>
+			</sources>
+		</jscomp>
+	</target>
+</project>
