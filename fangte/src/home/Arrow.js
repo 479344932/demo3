@@ -3,6 +3,7 @@ home.Arrow=function(){
 	var s = this;
 	F2xMovieClip.call(s);
 	s.initUI();
+	////
 };
 F2xExtend(home.Arrow,F2xMovieClip);
 home.Arrow.prototype.initUI=function(){
